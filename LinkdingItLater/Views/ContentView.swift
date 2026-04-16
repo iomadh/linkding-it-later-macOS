@@ -42,8 +42,8 @@ struct ContentView: View {
                     bookmark: bookmark,
                     isActive: true,
                     onMarkAsRead: {
+                        navigateNextUnread()
                         viewModel.removeBookmark(id: bookmark.id)
-                        selectedBookmark = nil
                     },
                     onTagsUpdated: { tags in
                         viewModel.updateBookmarkTags(id: bookmark.id, tags: tags)
