@@ -8,6 +8,7 @@ import SwiftUI
 extension Notification.Name {
     static let addBookmark = Notification.Name("addBookmark")
     static let refreshBookmarks = Notification.Name("refreshBookmarks")
+    static let navigateNextUnread = Notification.Name("navigateNextUnread")
 }
 
 @main

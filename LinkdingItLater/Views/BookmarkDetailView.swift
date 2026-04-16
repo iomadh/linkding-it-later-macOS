@@ -27,6 +27,8 @@ struct BookmarkDetailView: View {
     @State private var showReaderMode = false
     @State private var isLoadingReader = false
     @ObservedObject private var settings = SettingsManager.shared
+    @State private var webViewRef: WKWebView?
+    @State private var keyboardMonitor: Any?
 
     private let cacheManager = OfflineCacheManager.shared
 
@@ -56,6 +58,9 @@ struct BookmarkDetailView: View {
                         currentURL: $currentWebURL,
                         onLinkTapped: { tappedURL in
                             NSWorkspace.shared.open(tappedURL)
+                        },
+                        onWebViewCreated: { wv in
+                            webViewRef = wv
                         }
                     )
                     .id(bookmark.id)
@@ -84,6 +89,8 @@ struct BookmarkDetailView: View {
                 SettingsManager.shared.viaSourceURL = url.absoluteString
             }
         }
+        .onAppear { startKeyboardMonitor() }
+        .onDisappear { stopKeyboardMonitor() }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 // Mark as read
@@ -231,6 +238,95 @@ struct BookmarkDetailView: View {
             currentNotes = newNotes
             onNotesUpdated(newNotes)
         }
+    }
+
+    // MARK: - Keyboard Shortcuts
+
+    private func startKeyboardMonitor() {
+        keyboardMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [self] event in
+            // Don't intercept when typing in a text field / text view
+            if let fr = NSApp.keyWindow?.firstResponder, fr is NSTextView {
+                return event
+            }
+            // Don't intercept when a sheet is presented
+            if isEditingTags || isEditingNotes { return event }
+            // Only plain key presses (no Cmd/Opt/Ctrl)
+            guard event.modifierFlags.intersection([.command, .option, .control]).isEmpty else {
+                return event
+            }
+            return handleKey(event)
+        }
+    }
+
+    private func stopKeyboardMonitor() {
+        if let m = keyboardMonitor { NSEvent.removeMonitor(m) }
+        keyboardMonitor = nil
+    }
+
+    /// Returns nil if the event was consumed, or the original event to pass through.
+    private func handleKey(_ event: NSEvent) -> NSEvent? {
+        guard let chars = event.charactersIgnoringModifiers else { return event }
+
+        switch chars {
+        case "r", "u":
+            toggleReadStatus()
+            return nil
+
+        case "s":
+            toggleStar()
+            return nil
+
+        case "t":
+            isEditingTags = true
+            return nil
+
+        case "e":
+            isEditingNotes = true
+            return nil
+
+        case "b":
+            if let url = URL(string: bookmark.url) { NSWorkspace.shared.open(url) }
+            return nil
+
+        case "\r", "\n":   // Return / Enter
+            if let url = URL(string: bookmark.url) { NSWorkspace.shared.open(url) }
+            return nil
+
+        case " ":   // Space — scroll page, or navigate next if at bottom
+            scrollOrNavigateNext()
+            return nil
+
+        case "n", "+":
+            navigateNext()
+            return nil
+
+        default:
+            return event
+        }
+    }
+
+    private func scrollOrNavigateNext() {
+        guard let wv = webViewRef, !showReaderMode else {
+            navigateNext()
+            return
+        }
+        // Check if already scrolled to the bottom
+        wv.evaluateJavaScript(
+            "(function(){ var e = document.documentElement; return e.scrollTop + e.clientHeight >= e.scrollHeight - 50; })()"
+        ) { result, _ in
+            DispatchQueue.main.async {
+                if let atBottom = result as? Bool, atBottom {
+                    self.navigateNext()
+                } else {
+                    // Scroll down by 85% of visible height
+                    wv.evaluateJavaScript("window.scrollBy(0, Math.round(window.innerHeight * 0.85))", completionHandler: nil)
+                }
+            }
+        }
+    }
+
+    private func navigateNext() {
+        NotificationCenter.default.post(name: .navigateNextUnread, object: nil)
     }
 }
 

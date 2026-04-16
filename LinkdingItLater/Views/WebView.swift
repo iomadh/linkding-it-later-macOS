@@ -13,18 +13,21 @@ struct WebView: NSViewRepresentable {
     @Binding var isLoading: Bool
     @Binding var currentURL: URL?
     var onLinkTapped: ((URL) -> Void)?
+    var onWebViewCreated: ((WKWebView) -> Void)?
 
-    init(url: URL, isLoading: Binding<Bool>, fallbackURL: URL? = nil, currentURL: Binding<URL?> = .constant(nil), onLinkTapped: ((URL) -> Void)? = nil) {
+    init(url: URL, isLoading: Binding<Bool>, fallbackURL: URL? = nil, currentURL: Binding<URL?> = .constant(nil), onLinkTapped: ((URL) -> Void)? = nil, onWebViewCreated: ((WKWebView) -> Void)? = nil) {
         self.url = url
         self._isLoading = isLoading
         self.fallbackURL = fallbackURL
         self._currentURL = currentURL
         self.onLinkTapped = onLinkTapped
+        self.onWebViewCreated = onWebViewCreated
     }
 
     func makeNSView(context: Context) -> WKWebView {
         let webView = WKWebView()
         webView.navigationDelegate = context.coordinator
+        onWebViewCreated?(webView)
         return webView
     }
 

@@ -76,6 +76,9 @@ struct ContentView: View {
                 await viewModel.refresh()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .navigateNextUnread)) { _ in
+            navigateNextUnread()
+        }
         .onAppear {
             // Pre-select the first filter
             if selectedFilter == nil {
@@ -87,5 +90,24 @@ struct ContentView: View {
                 }
             }
         }
+    }
+
+    private func navigateNextUnread() {
+        let bookmarks: [Bookmark]
+        if let filter = selectedFilter {
+            bookmarks = filter.apply(to: viewModel.bookmarks)
+        } else {
+            bookmarks = viewModel.bookmarks
+        }
+        guard !bookmarks.isEmpty else { return }
+
+        if let current = selectedBookmark,
+           let idx = bookmarks.firstIndex(of: current),
+           idx + 1 < bookmarks.count {
+            selectedBookmark = bookmarks[idx + 1]
+        } else if selectedBookmark == nil {
+            selectedBookmark = bookmarks.first
+        }
+        // If already on last bookmark, stay there
     }
 }
