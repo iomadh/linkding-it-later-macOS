@@ -80,6 +80,7 @@ struct BookmarkDetailView: View {
             currentTags = bookmark.tagNames
             currentNotes = bookmark.notes
             displayURL = URL(string: bookmark.url)
+            markedAsRead = !bookmark.unread
             if let tags = try? await cacheManager.fetchAllTags() {
                 availableTags = tags
             }

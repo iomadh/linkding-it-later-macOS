@@ -20,6 +20,7 @@ struct TagEditingView: View {
     @State private var tags: [String]
     @State private var newTagText = ""
     @State private var isSaving = false
+    @State private var selectedSuggestionIndex: Int? = nil
     @FocusState private var isTextFieldFocused: Bool
 
     init(bookmarkId: Int, initialTags: [String], availableTags: [String], onSave: @escaping ([String]) -> Void) {
@@ -56,21 +57,62 @@ struct TagEditingView: View {
                     TextField("Add tag...", text: $newTagText)
                         .autocorrectionDisabled()
                         .focused($isTextFieldFocused)
-                        .onSubmit {
-                            addTag(newTagText)
-                            isTextFieldFocused = true
+                        .onChange(of: newTagText) { _, _ in
+                            selectedSuggestionIndex = nil
+                        }
+                        .onKeyPress(.downArrow) {
+                            guard !filteredSuggestions.isEmpty else { return .ignored }
+                            if let idx = selectedSuggestionIndex {
+                                selectedSuggestionIndex = min(idx + 1, filteredSuggestions.count - 1)
+                            } else {
+                                selectedSuggestionIndex = 0
+                            }
+                            return .handled
+                        }
+                        .onKeyPress(.upArrow) {
+                            if let idx = selectedSuggestionIndex, idx > 0 {
+                                selectedSuggestionIndex = idx - 1
+                            } else {
+                                selectedSuggestionIndex = nil
+                            }
+                            return .handled
+                        }
+                        .onKeyPress(.return) {
+                            if let idx = selectedSuggestionIndex, idx < filteredSuggestions.count {
+                                addTag(filteredSuggestions[idx])
+                                selectedSuggestionIndex = nil
+                                isTextFieldFocused = true
+                                return .handled
+                            }
+                            let trimmed = newTagText.trimmingCharacters(in: .whitespaces)
+                            if !trimmed.isEmpty {
+                                addTag(trimmed)
+                                isTextFieldFocused = true
+                                return .handled
+                            }
+                            // Empty field, no suggestion selected → Done
+                            onSave(tags)
+                            dismiss()
+                            return .handled
                         }
 
                     if !filteredSuggestions.isEmpty {
-                        ForEach(filteredSuggestions, id: \.self) { suggestion in
+                        ForEach(Array(filteredSuggestions.enumerated()), id: \.element) { index, suggestion in
                             Button {
                                 addTag(suggestion)
+                                isTextFieldFocused = true
                             } label: {
                                 HStack {
                                     Image(systemName: "tag").foregroundColor(.secondary)
                                     Text(suggestion).foregroundColor(.primary)
+                                    Spacer()
                                 }
+                                .padding(.vertical, 2)
+                                .padding(.horizontal, 4)
+                                .background(selectedSuggestionIndex == index ? Color.accentColor.opacity(0.15) : Color.clear)
+                                .cornerRadius(4)
                             }
+                            .buttonStyle(.plain)
                         }
                     }
                 }
@@ -86,6 +128,7 @@ struct TagEditingView: View {
                 }
             }
             .navigationTitle("Edit Tags")
+            .onAppear { isTextFieldFocused = true }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
