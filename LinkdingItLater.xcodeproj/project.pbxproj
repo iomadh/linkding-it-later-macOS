@@ -1,0 +1,619 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03825E18A22A2978018F5192 /* LinkdingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A802326BCEA80A139A28D8 /* LinkdingService.swift */; };
+		088A05D1663D7BE501F5F0F6 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F198A655D37AB4E243CEE210 /* SidebarView.swift */; };
+		1A0AC4EF5FF00E365BD9A5A8 /* TagEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3075B930C8F38CF68F946BA /* TagEditingView.swift */; };
+		2234B0A6430D91441D5AFEBF /* MenuBarQuickAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7240402F11110184C32245EA /* MenuBarQuickAddView.swift */; };
+		2E54F7A2A889A1DF235585AC /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BAA9376197BDB330901958F4 /* ShareExtension.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3090B2298BEB9710E353E4CC /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2A7CC85546C3288583B658 /* NetworkError.swift */; };
+		35D9678C2634B3E8654BAF88 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B717CECED0D14AE511264479 /* SettingsViewModel.swift */; };
+		37BABC5D822D38312D6CD799 /* LinkdingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A802326BCEA80A139A28D8 /* LinkdingService.swift */; };
+		394C89365D3F938D129CFC1A /* BookmarkRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85708296DC2C4673541DA7E /* BookmarkRowView.swift */; };
+		410CC756F8E345F73FACA502 /* BookmarkListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F0A0A68A85FB6A66E1A41B /* BookmarkListView.swift */; };
+		54ED1F4368854A4A9965D2E0 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9A51412F5F8A0D728907BD /* SettingsManager.swift */; };
+		577FC158AB877D79448D6A6A /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D0D88F7B8FD6AA4029BE75 /* WebView.swift */; };
+		5C38448F1DEA5CBDA2841BE7 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2A7CC85546C3288583B658 /* NetworkError.swift */; };
+		64045A8EFC423CCED6C6077B /* BookmarkDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85DFF698C5153B546931E4BD /* BookmarkDetailView.swift */; };
+		696F863A13081A7CAE7D0F6B /* LinkdingItLaterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13E00B4FF5DB5694434EE5E9 /* LinkdingItLaterApp.swift */; };
+		69BFB498B08DD8AF13E2F5AC /* BookmarkFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44D3E79190810B41CA93B6A /* BookmarkFilter.swift */; };
+		72332A81D6D6C31AF09FE7BD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC0F312C67217B17C848DF4 /* ContentView.swift */; };
+		820C124342E6D244114D0A0C /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6454755D8D2B228A75BDFE70 /* MainViewModel.swift */; };
+		8849A6CEF63100E63F2E55AD /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA7AB20E3DD712107771320 /* KeychainService.swift */; };
+		8B182710AEE708582DDA0651 /* OfflineStatusBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BF95D85117021823918374 /* OfflineStatusBanner.swift */; };
+		8D87FDD12468FBF6EB19189E /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA7AB20E3DD712107771320 /* KeychainService.swift */; };
+		9393DF21D122515C127BA7C4 /* NotesEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F2C108F621CFF3EF0431DC3 /* NotesEditingView.swift */; };
+		990AB96A9D964AAC7A83E07A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B25177CD99DA166CE8B38C5E /* SettingsView.swift */; };
+		ABD943E0A929DD4D0CB2D9E6 /* FilterListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35F0B36504DC3410A834BE0 /* FilterListView.swift */; };
+		AE38543CEAD3C61A79E2AA1A /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9A51412F5F8A0D728907BD /* SettingsManager.swift */; };
+		B1CE161549DE52B24BC06607 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8F90D08BA97E22B595E5D5 /* NetworkMonitor.swift */; };
+		B7530C74D73DF1D585EEC9C0 /* ShareExtensionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A8F6B43D8DB6360D5162CC /* ShareExtensionViewController.swift */; };
+		C1A17FEA8F79575DC73B4E30 /* CacheModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5654E1E146F1473DE500A3 /* CacheModels.swift */; };
+		C847D20C0579DBC1B36A18E1 /* CacheStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A546674EA04CACCB73653988 /* CacheStorage.swift */; };
+		CB3828073F9759D2C52A6E06 /* OfflineCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CE7CEFAB4CF5DEF7599565 /* OfflineCacheManager.swift */; };
+		D744DFC7D25A601DAA22D4A2 /* FilterEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB17230C120DCD3E649457 /* FilterEditView.swift */; };
+		D941902946E8C6B1F6E45E07 /* BookmarkEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 492523B4CB2F548115126F20 /* BookmarkEditView.swift */; };
+		DC003692B653C1D97967D20E /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD83E413C4BE6EE3FE3607F5 /* Bookmark.swift */; };
+		DC732514EF8D522AD79606D0 /* CacheModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5654E1E146F1473DE500A3 /* CacheModels.swift */; };
+		DE8DF3DE5592D3D8FAE4C27A /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE596458A246588012EEB880 /* Extensions.swift */; };
+		DE970E8692B2DFA8CA579B72 /* SFSymbolPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EB4DD03C32AF1D684785570 /* SFSymbolPickerView.swift */; };
+		F67428D07908530417BB4CB0 /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD83E413C4BE6EE3FE3607F5 /* Bookmark.swift */; };
+		F777C656DFEB84F5F9A58C9F /* BookmarkFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44D3E79190810B41CA93B6A /* BookmarkFilter.swift */; };
+		FC0C990BF4ACCAA5C8363EAE /* AddBookmarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72DAC92EA713EE248BF7594 /* AddBookmarkView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		15563B3D684A8DA0C6C84927 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BA541052E50CC9AA4C4CDEA2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B1E91119ADA2F02C94A4E540;
+			remoteInfo = ShareExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A84C66AAB5130825E88AB91E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2E54F7A2A889A1DF235585AC /* ShareExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0D661D8CA1D035C8C1A02CFC /* LinkdingItLater.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LinkdingItLater.entitlements; sourceTree = "<group>"; };
+		0F4EEF2E5A8181883BF5DC31 /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
+		13E00B4FF5DB5694434EE5E9 /* LinkdingItLaterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkdingItLaterApp.swift; sourceTree = "<group>"; };
+		28A8F6B43D8DB6360D5162CC /* ShareExtensionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewController.swift; sourceTree = "<group>"; };
+		29CB17230C120DCD3E649457 /* FilterEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterEditView.swift; sourceTree = "<group>"; };
+		2DC0F312C67217B17C848DF4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		492523B4CB2F548115126F20 /* BookmarkEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkEditView.swift; sourceTree = "<group>"; };
+		4B2A7CC85546C3288583B658 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		4EB4DD03C32AF1D684785570 /* SFSymbolPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbolPickerView.swift; sourceTree = "<group>"; };
+		4F5654E1E146F1473DE500A3 /* CacheModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheModels.swift; sourceTree = "<group>"; };
+		5AA7AB20E3DD712107771320 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		6454755D8D2B228A75BDFE70 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		66CC41AF595BD6BD81F5D417 /* LinkdingItLater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LinkdingItLater.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F2C108F621CFF3EF0431DC3 /* NotesEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesEditingView.swift; sourceTree = "<group>"; };
+		7240402F11110184C32245EA /* MenuBarQuickAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarQuickAddView.swift; sourceTree = "<group>"; };
+		85DFF698C5153B546931E4BD /* BookmarkDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkDetailView.swift; sourceTree = "<group>"; };
+		90BF95D85117021823918374 /* OfflineStatusBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineStatusBanner.swift; sourceTree = "<group>"; };
+		A546674EA04CACCB73653988 /* CacheStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheStorage.swift; sourceTree = "<group>"; };
+		AC8F90D08BA97E22B595E5D5 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		AE9A51412F5F8A0D728907BD /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
+		B25177CD99DA166CE8B38C5E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B35F0B36504DC3410A834BE0 /* FilterListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterListView.swift; sourceTree = "<group>"; };
+		B717CECED0D14AE511264479 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		B8CE7CEFAB4CF5DEF7599565 /* OfflineCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineCacheManager.swift; sourceTree = "<group>"; };
+		BAA9376197BDB330901958F4 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C44D3E79190810B41CA93B6A /* BookmarkFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkFilter.swift; sourceTree = "<group>"; };
+		CD83E413C4BE6EE3FE3607F5 /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
+		CF4397C9609E0EA49F9A3F72 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D3075B930C8F38CF68F946BA /* TagEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagEditingView.swift; sourceTree = "<group>"; };
+		D5F0A0A68A85FB6A66E1A41B /* BookmarkListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkListView.swift; sourceTree = "<group>"; };
+		E5A802326BCEA80A139A28D8 /* LinkdingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkdingService.swift; sourceTree = "<group>"; };
+		E72DAC92EA713EE248BF7594 /* AddBookmarkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddBookmarkView.swift; sourceTree = "<group>"; };
+		E85708296DC2C4673541DA7E /* BookmarkRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkRowView.swift; sourceTree = "<group>"; };
+		F198A655D37AB4E243CEE210 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		F6D0D88F7B8FD6AA4029BE75 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+		FE596458A246588012EEB880 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		068F4EAE92783FBD502FD93F = {
+			isa = PBXGroup;
+			children = (
+				9DB282CC47F174FF9424B9B2 /* LinkdingItLater */,
+				6978CAAB466AE48040C7DFA5 /* Shared */,
+				9653887890E9ECF78BC481A0 /* ShareExtension */,
+				112B535B170077FCE152B19F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		10B6E55B498554EA1A18CFFD /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				CD83E413C4BE6EE3FE3607F5 /* Bookmark.swift */,
+				C44D3E79190810B41CA93B6A /* BookmarkFilter.swift */,
+				4F5654E1E146F1473DE500A3 /* CacheModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		112B535B170077FCE152B19F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				66CC41AF595BD6BD81F5D417 /* LinkdingItLater.app */,
+				BAA9376197BDB330901958F4 /* ShareExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4FFDC172F8317003629364B5 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				5AA7AB20E3DD712107771320 /* KeychainService.swift */,
+				E5A802326BCEA80A139A28D8 /* LinkdingService.swift */,
+				AE9A51412F5F8A0D728907BD /* SettingsManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		6978CAAB466AE48040C7DFA5 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				10B6E55B498554EA1A18CFFD /* Models */,
+				4FFDC172F8317003629364B5 /* Services */,
+				D47ED69572A140872D4ABFFD /* Utilities */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		84E30CFE6070D04B095801E6 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				6454755D8D2B228A75BDFE70 /* MainViewModel.swift */,
+				B717CECED0D14AE511264479 /* SettingsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		9653887890E9ECF78BC481A0 /* ShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				0F4EEF2E5A8181883BF5DC31 /* ShareExtension.entitlements */,
+				28A8F6B43D8DB6360D5162CC /* ShareExtensionViewController.swift */,
+			);
+			path = ShareExtension;
+			sourceTree = "<group>";
+		};
+		9C89B8786495B920A46E2522 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A546674EA04CACCB73653988 /* CacheStorage.swift */,
+				AC8F90D08BA97E22B595E5D5 /* NetworkMonitor.swift */,
+				B8CE7CEFAB4CF5DEF7599565 /* OfflineCacheManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		9DB282CC47F174FF9424B9B2 /* LinkdingItLater */ = {
+			isa = PBXGroup;
+			children = (
+				CF4397C9609E0EA49F9A3F72 /* Info.plist */,
+				0D661D8CA1D035C8C1A02CFC /* LinkdingItLater.entitlements */,
+				13E00B4FF5DB5694434EE5E9 /* LinkdingItLaterApp.swift */,
+				9C89B8786495B920A46E2522 /* Services */,
+				EC1BC18D682584511F6571DA /* Utilities */,
+				84E30CFE6070D04B095801E6 /* ViewModels */,
+				BC54DCE3D9172BC450E47EE5 /* Views */,
+			);
+			path = LinkdingItLater;
+			sourceTree = "<group>";
+		};
+		BC54DCE3D9172BC450E47EE5 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E72DAC92EA713EE248BF7594 /* AddBookmarkView.swift */,
+				85DFF698C5153B546931E4BD /* BookmarkDetailView.swift */,
+				492523B4CB2F548115126F20 /* BookmarkEditView.swift */,
+				D5F0A0A68A85FB6A66E1A41B /* BookmarkListView.swift */,
+				E85708296DC2C4673541DA7E /* BookmarkRowView.swift */,
+				2DC0F312C67217B17C848DF4 /* ContentView.swift */,
+				29CB17230C120DCD3E649457 /* FilterEditView.swift */,
+				B35F0B36504DC3410A834BE0 /* FilterListView.swift */,
+				7240402F11110184C32245EA /* MenuBarQuickAddView.swift */,
+				6F2C108F621CFF3EF0431DC3 /* NotesEditingView.swift */,
+				90BF95D85117021823918374 /* OfflineStatusBanner.swift */,
+				B25177CD99DA166CE8B38C5E /* SettingsView.swift */,
+				4EB4DD03C32AF1D684785570 /* SFSymbolPickerView.swift */,
+				F198A655D37AB4E243CEE210 /* SidebarView.swift */,
+				D3075B930C8F38CF68F946BA /* TagEditingView.swift */,
+				F6D0D88F7B8FD6AA4029BE75 /* WebView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		D47ED69572A140872D4ABFFD /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				4B2A7CC85546C3288583B658 /* NetworkError.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		EC1BC18D682584511F6571DA /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				FE596458A246588012EEB880 /* Extensions.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8AB2AB717D5A40E81963D0D6 /* LinkdingItLater */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5E1647EC0AC54310BAB948F /* Build configuration list for PBXNativeTarget "LinkdingItLater" */;
+			buildPhases = (
+				F3BC9A08CF6046C1AB338471 /* Sources */,
+				A84C66AAB5130825E88AB91E /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				871013A1E98A6AFA9480B596 /* PBXTargetDependency */,
+			);
+			name = LinkdingItLater;
+			packageProductDependencies = (
+			);
+			productName = LinkdingItLater;
+			productReference = 66CC41AF595BD6BD81F5D417 /* LinkdingItLater.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B1E91119ADA2F02C94A4E540 /* ShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F85D0A667267306A13132AA /* Build configuration list for PBXNativeTarget "ShareExtension" */;
+			buildPhases = (
+				6BDFB170D876BDEFB8E92A07 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShareExtension;
+			packageProductDependencies = (
+			);
+			productName = ShareExtension;
+			productReference = BAA9376197BDB330901958F4 /* ShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BA541052E50CC9AA4C4CDEA2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					8AB2AB717D5A40E81963D0D6 = {
+						ProvisioningStyle = Manual;
+					};
+					B1E91119ADA2F02C94A4E540 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 01D072383CB10BEB69651D4A /* Build configuration list for PBXProject "LinkdingItLater" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 068F4EAE92783FBD502FD93F;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 112B535B170077FCE152B19F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8AB2AB717D5A40E81963D0D6 /* LinkdingItLater */,
+				B1E91119ADA2F02C94A4E540 /* ShareExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6BDFB170D876BDEFB8E92A07 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC003692B653C1D97967D20E /* Bookmark.swift in Sources */,
+				69BFB498B08DD8AF13E2F5AC /* BookmarkFilter.swift in Sources */,
+				C1A17FEA8F79575DC73B4E30 /* CacheModels.swift in Sources */,
+				8849A6CEF63100E63F2E55AD /* KeychainService.swift in Sources */,
+				03825E18A22A2978018F5192 /* LinkdingService.swift in Sources */,
+				3090B2298BEB9710E353E4CC /* NetworkError.swift in Sources */,
+				AE38543CEAD3C61A79E2AA1A /* SettingsManager.swift in Sources */,
+				B7530C74D73DF1D585EEC9C0 /* ShareExtensionViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3BC9A08CF6046C1AB338471 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC0C990BF4ACCAA5C8363EAE /* AddBookmarkView.swift in Sources */,
+				F67428D07908530417BB4CB0 /* Bookmark.swift in Sources */,
+				64045A8EFC423CCED6C6077B /* BookmarkDetailView.swift in Sources */,
+				D941902946E8C6B1F6E45E07 /* BookmarkEditView.swift in Sources */,
+				F777C656DFEB84F5F9A58C9F /* BookmarkFilter.swift in Sources */,
+				410CC756F8E345F73FACA502 /* BookmarkListView.swift in Sources */,
+				394C89365D3F938D129CFC1A /* BookmarkRowView.swift in Sources */,
+				DC732514EF8D522AD79606D0 /* CacheModels.swift in Sources */,
+				C847D20C0579DBC1B36A18E1 /* CacheStorage.swift in Sources */,
+				72332A81D6D6C31AF09FE7BD /* ContentView.swift in Sources */,
+				DE8DF3DE5592D3D8FAE4C27A /* Extensions.swift in Sources */,
+				D744DFC7D25A601DAA22D4A2 /* FilterEditView.swift in Sources */,
+				ABD943E0A929DD4D0CB2D9E6 /* FilterListView.swift in Sources */,
+				8D87FDD12468FBF6EB19189E /* KeychainService.swift in Sources */,
+				696F863A13081A7CAE7D0F6B /* LinkdingItLaterApp.swift in Sources */,
+				37BABC5D822D38312D6CD799 /* LinkdingService.swift in Sources */,
+				820C124342E6D244114D0A0C /* MainViewModel.swift in Sources */,
+				2234B0A6430D91441D5AFEBF /* MenuBarQuickAddView.swift in Sources */,
+				5C38448F1DEA5CBDA2841BE7 /* NetworkError.swift in Sources */,
+				B1CE161549DE52B24BC06607 /* NetworkMonitor.swift in Sources */,
+				9393DF21D122515C127BA7C4 /* NotesEditingView.swift in Sources */,
+				CB3828073F9759D2C52A6E06 /* OfflineCacheManager.swift in Sources */,
+				8B182710AEE708582DDA0651 /* OfflineStatusBanner.swift in Sources */,
+				DE970E8692B2DFA8CA579B72 /* SFSymbolPickerView.swift in Sources */,
+				54ED1F4368854A4A9965D2E0 /* SettingsManager.swift in Sources */,
+				990AB96A9D964AAC7A83E07A /* SettingsView.swift in Sources */,
+				35D9678C2634B3E8654BAF88 /* SettingsViewModel.swift in Sources */,
+				088A05D1663D7BE501F5F0F6 /* SidebarView.swift in Sources */,
+				1A0AC4EF5FF00E365BD9A5A8 /* TagEditingView.swift in Sources */,
+				577FC158AB877D79448D6A6A /* WebView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		871013A1E98A6AFA9480B596 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B1E91119ADA2F02C94A4E540 /* ShareExtension */;
+			targetProxy = 15563B3D684A8DA0C6C84927 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		115756EF69A8B5FF1343F32C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = LinkdingItLater/LinkdingItLater.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = LinkdingItLater/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dellah.linkdingitlater;
+				PRODUCT_NAME = "Linkding It Later";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		29686E25036666AC3B6DEC70 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = LinkdingItLater/LinkdingItLater.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = LinkdingItLater/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dellah.linkdingitlater;
+				PRODUCT_NAME = "Linkding It Later";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		3C71640FDF0B01A35DBD2132 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = YES;
+				CODE_SIGNING_REQUIRED = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		4660C81F3B9BF4CB03D2451F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dellah.linkdingitlater.shareextension;
+				PRODUCT_NAME = ShareExtension;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		5628292B8259CD4974289C1C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = YES;
+				CODE_SIGNING_REQUIRED = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		7EFB602E6FDAB6C232179E66 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dellah.linkdingitlater.shareextension;
+				PRODUCT_NAME = ShareExtension;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		01D072383CB10BEB69651D4A /* Build configuration list for PBXProject "LinkdingItLater" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5628292B8259CD4974289C1C /* Debug */,
+				3C71640FDF0B01A35DBD2132 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		1F85D0A667267306A13132AA /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4660C81F3B9BF4CB03D2451F /* Debug */,
+				7EFB602E6FDAB6C232179E66 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F5E1647EC0AC54310BAB948F /* Build configuration list for PBXNativeTarget "LinkdingItLater" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				115756EF69A8B5FF1343F32C /* Debug */,
+				29686E25036666AC3B6DEC70 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BA541052E50CC9AA4C4CDEA2 /* Project object */;
+}

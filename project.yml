@@ -1,0 +1,63 @@
+name: LinkdingItLater
+options:
+  bundleIdPrefix: com.dellah
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "16.0"
+  defaultConfig: Debug
+  generateEmptyDirectories: false
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    SWIFT_STRICT_CONCURRENCY: minimal
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGNING_REQUIRED: "YES"
+    CODE_SIGNING_ALLOWED: "YES"
+
+targets:
+  LinkdingItLater:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: LinkdingItLater
+        excludes:
+          - "**/.DS_Store"
+          - "Resources/**"
+      - path: Shared
+    resources:
+      - path: LinkdingItLater/Resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dellah.linkdingitlater
+        PRODUCT_NAME: "Linkding It Later"
+        INFOPLIST_FILE: LinkdingItLater/Info.plist
+        CODE_SIGN_ENTITLEMENTS: LinkdingItLater/LinkdingItLater.entitlements
+    dependencies:
+      - target: ShareExtension
+        embed: true
+        codeSign: true
+
+  ShareExtension:
+    type: app-extension
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: ShareExtension
+        excludes:
+          - Info.plist
+          - "**/.DS_Store"
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dellah.linkdingitlater.shareextension
+        PRODUCT_NAME: ShareExtension
+        INFOPLIST_FILE: ShareExtension/Info.plist
+        CODE_SIGN_ENTITLEMENTS: ShareExtension/ShareExtension.entitlements
