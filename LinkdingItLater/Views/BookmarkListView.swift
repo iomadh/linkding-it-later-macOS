@@ -10,26 +10,13 @@ struct BookmarkListView: View {
     @ObservedObject var viewModel: MainViewModel
     @Binding var selectedBookmark: Bookmark?
 
+    @Environment(\.openSettings) private var openSettings
     @State private var tagEditingBookmark: Bookmark?
     @State private var availableTags: [String] = []
-    @State private var selectedDotTag: String? = nil
     @State private var editingBookmark: Bookmark?
 
-    private var baseFilteredBookmarks: [Bookmark] {
-        filter.apply(to: viewModel.bookmarks)
-    }
-
-    private var availableDotTags: [String] {
-        let allTags = baseFilteredBookmarks.flatMap { $0.tagNames }
-        let dotTags = Set(allTags.filter { $0.hasPrefix(".") })
-        return dotTags.sorted()
-    }
-
     private var filteredBookmarks: [Bookmark] {
-        if let dotTag = selectedDotTag {
-            return baseFilteredBookmarks.filter { $0.tagNames.contains(dotTag) }
-        }
-        return baseFilteredBookmarks
+        filter.apply(to: viewModel.bookmarks)
     }
 
     var body: some View {
@@ -50,11 +37,6 @@ struct BookmarkListView: View {
                             Task { await viewModel.syncPendingUpdates() }
                         }
                     )
-
-                    if filter.showDotTagSubFilters && !availableDotTags.isEmpty {
-                        dotTagPillRow
-                            .padding(.vertical, 8)
-                    }
 
                     if filteredBookmarks.isEmpty {
                         allReadView
@@ -124,7 +106,7 @@ struct BookmarkListView: View {
             Text("Configure your Linkding server in Settings to get started.")
         } actions: {
             Button("Open Settings") {
-                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                openSettings()
             }
             .buttonStyle(.borderedProminent)
         }
@@ -227,50 +209,11 @@ struct BookmarkListView: View {
                 .buttonStyle(.bordered)
 
                 Button("Settings") {
-                    NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                    openSettings()
                 }
                 .buttonStyle(.borderedProminent)
             }
         }
     }
 
-    private var dotTagPillRow: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                SubFilterPill(
-                    title: "All",
-                    isSelected: selectedDotTag == nil,
-                    onTap: { selectedDotTag = nil }
-                )
-
-                ForEach(availableDotTags, id: \.self) { tag in
-                    SubFilterPill(
-                        title: String(tag.dropFirst()),
-                        isSelected: selectedDotTag == tag,
-                        onTap: { selectedDotTag = tag }
-                    )
-                }
-            }
-            .padding(.horizontal)
-        }
-    }
-}
-
-struct SubFilterPill: View {
-    let title: String
-    let isSelected: Bool
-    let onTap: () -> Void
-
-    var body: some View {
-        Button(action: onTap) {
-            Text(title)
-                .font(.subheadline)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(isSelected ? Color.accentColor : Color(NSColor.controlBackgroundColor))
-                .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(16)
-        }
-        .buttonStyle(.plain)
-    }
 }

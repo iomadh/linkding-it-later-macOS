@@ -37,6 +37,7 @@ targets:
         PRODUCT_NAME: "Linkding It Later"
         INFOPLIST_FILE: LinkdingItLater/Info.plist
         CODE_SIGN_ENTITLEMENTS: LinkdingItLater/LinkdingItLater.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
     dependencies:
       - target: ShareExtension
         embed: true

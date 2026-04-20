@@ -38,6 +38,26 @@ struct BookmarkDetailView: View {
 
     var body: some View {
         ZStack {
+            // WebView stays in the hierarchy at all times to avoid reloading on reader mode toggle
+            if let url = displayURL {
+                WebView(
+                    url: url,
+                    isLoading: $isLoading,
+                    fallbackURL: URL(string: bookmark.url),
+                    currentURL: $currentWebURL,
+                    onLinkTapped: { tappedURL in
+                        NSWorkspace.shared.open(tappedURL)
+                    },
+                    onWebViewCreated: { wv in
+                        webViewRef = wv
+                    }
+                )
+                .id(bookmark.id)
+                .opacity(showReaderMode ? 0 : 1)
+            } else {
+                ContentUnavailableView("Invalid URL", systemImage: "exclamationmark.triangle")
+            }
+
             if showReaderMode {
                 if let url = currentWebURL ?? displayURL {
                     ReaderModeWebView(
@@ -48,24 +68,6 @@ struct BookmarkDetailView: View {
                         onScrollDirectionChange: { _ in }
                     )
                     .id("reader-\(bookmark.id)-\(settings.readerFontSize.rawValue)-\(settings.readerTheme.rawValue)")
-                }
-            } else {
-                if let url = displayURL {
-                    WebView(
-                        url: url,
-                        isLoading: $isLoading,
-                        fallbackURL: URL(string: bookmark.url),
-                        currentURL: $currentWebURL,
-                        onLinkTapped: { tappedURL in
-                            NSWorkspace.shared.open(tappedURL)
-                        },
-                        onWebViewCreated: { wv in
-                            webViewRef = wv
-                        }
-                    )
-                    .id(bookmark.id)
-                } else {
-                    ContentUnavailableView("Invalid URL", systemImage: "exclamationmark.triangle")
                 }
             }
 
@@ -92,6 +94,10 @@ struct BookmarkDetailView: View {
         }
         .onAppear { startKeyboardMonitor() }
         .onDisappear { stopKeyboardMonitor() }
+        .onChange(of: bookmark.id) { _, _ in
+            stopKeyboardMonitor()
+            startKeyboardMonitor()
+        }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 // Mark as read
@@ -105,7 +111,7 @@ struct BookmarkDetailView: View {
                         Image(systemName: markedAsRead ? "checkmark.circle.fill" : "circle")
                     }
                 }
-                .help(markedAsRead ? "Mark as unread" : "Mark as read")
+                .help(markedAsRead ? "Mark as unread (m)" : "Mark as read (m)")
                 .disabled(isMarkingRead)
                 .keyboardShortcut(.return, modifiers: .command)
 
@@ -156,8 +162,7 @@ struct BookmarkDetailView: View {
                 } label: {
                     Image(systemName: showReaderMode ? "doc.plaintext.fill" : "doc.plaintext")
                 }
-                .help(showReaderMode ? "Exit reader mode" : "Enter reader mode")
-                .keyboardShortcut("r", modifiers: [.command, .shift])
+                .help(showReaderMode ? "Exit reader mode (r)" : "Enter reader mode (r)")
 
                 // Open in browser
                 if let url = URL(string: bookmark.url) {
@@ -269,8 +274,12 @@ struct BookmarkDetailView: View {
         guard let chars = event.charactersIgnoringModifiers else { return event }
 
         switch chars {
-        case "r", "u":
+        case "m", "u":
             toggleReadStatus()
+            return nil
+
+        case "r":
+            showReaderMode.toggle()
             return nil
 
         case "s":

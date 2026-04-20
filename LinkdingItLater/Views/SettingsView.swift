@@ -10,6 +10,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
+        NavigationStack {
         Form {
             Section {
                 TextField("Server URL", text: $viewModel.serverURL)
@@ -104,5 +105,6 @@ struct SettingsView: View {
                 Text(viewModel.errorMessage ?? "Connection failed.")
             }
         }
+        } // NavigationStack
     }
 }
