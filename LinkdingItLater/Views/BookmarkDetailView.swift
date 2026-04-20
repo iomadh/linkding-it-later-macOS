@@ -28,6 +28,7 @@ struct BookmarkDetailView: View {
     @State private var isLoadingReader = false
     @ObservedObject private var settings = SettingsManager.shared
     @State private var webViewRef: WKWebView?
+    @State private var readerWebViewRef: WKWebView?
     @State private var keyboardMonitor: Any?
 
     private let cacheManager = OfflineCacheManager.shared
@@ -65,7 +66,8 @@ struct BookmarkDetailView: View {
                         isLoading: $isLoadingReader,
                         fontSize: settings.readerFontSize,
                         theme: settings.readerTheme,
-                        onScrollDirectionChange: { _ in }
+                        onScrollDirectionChange: { _ in },
+                        onWebViewCreated: { wv in readerWebViewRef = wv }
                     )
                     .id("reader-\(bookmark.id)-\(settings.readerFontSize.rawValue)-\(settings.readerTheme.rawValue)")
                 }
@@ -316,11 +318,11 @@ struct BookmarkDetailView: View {
     }
 
     private func scrollOrNavigateNext() {
-        guard let wv = webViewRef, !showReaderMode else {
+        let wv = showReaderMode ? readerWebViewRef : webViewRef
+        guard let wv else {
             navigateNext()
             return
         }
-        // Check if already scrolled to the bottom
         wv.evaluateJavaScript(
             "(function(){ var e = document.documentElement; return e.scrollTop + e.clientHeight >= e.scrollHeight - 50; })()"
         ) { result, _ in
@@ -328,7 +330,6 @@ struct BookmarkDetailView: View {
                 if let atBottom = result as? Bool, atBottom {
                     self.navigateNext()
                 } else {
-                    // Scroll down by 85% of visible height
                     wv.evaluateJavaScript("window.scrollBy(0, Math.round(window.innerHeight * 0.85))", completionHandler: nil)
                 }
             }
@@ -348,6 +349,7 @@ struct ReaderModeWebView: NSViewRepresentable {
     let fontSize: ReaderFontSize
     let theme: ReaderTheme
     let onScrollDirectionChange: (Bool) -> Void
+    var onWebViewCreated: ((WKWebView) -> Void)? = nil
 
     func makeNSView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
@@ -357,6 +359,7 @@ struct ReaderModeWebView: NSViewRepresentable {
 
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
+        onWebViewCreated?(webView)
         return webView
     }
 
