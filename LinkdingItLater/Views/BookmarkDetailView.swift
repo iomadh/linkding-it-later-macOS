@@ -31,60 +31,181 @@ struct BookmarkDetailView: View {
     @State private var readerWebViewRef: WKWebView?
     @State private var keyboardMonitor: Any?
 
+    // Highlights state
+    @State private var highlights: [Highlight] = []
+    @State private var showHighlightsList = false
+    @State private var selectedText = ""
+    @State private var selectedMarkdownText = ""
+    @State private var showAddNoteSheet = false
+    @State private var pendingNoteText = ""
+    @State private var readerSnapshotTrigger = 0
+    @State private var serverReaderHTML: String? = nil
+    @State private var doubleClickEditingHighlight: Highlight? = nil
+    @State private var doubleClickEditNoteText = ""
+
     private let cacheManager = OfflineCacheManager.shared
 
     private var isStarred: Bool {
         currentTags.contains("!star")
     }
 
-    var body: some View {
-        ZStack {
-            // WebView stays in the hierarchy at all times to avoid reloading on reader mode toggle
-            if let url = displayURL {
-                WebView(
-                    url: url,
-                    isLoading: $isLoading,
-                    fallbackURL: URL(string: bookmark.url),
-                    currentURL: $currentWebURL,
-                    onLinkTapped: { tappedURL in
-                        NSWorkspace.shared.open(tappedURL)
-                    },
-                    onWebViewCreated: { wv in
-                        webViewRef = wv
-                    }
-                )
-                .id(bookmark.id)
-                .opacity(showReaderMode ? 0 : 1)
-            } else {
-                ContentUnavailableView("Invalid URL", systemImage: "exclamationmark.triangle")
-            }
+    private var bookmarkDisplayTitle: String {
+        if !bookmark.title.isEmpty { return bookmark.title }
+        if let t = bookmark.websiteTitle, !t.isEmpty { return t }
+        return bookmark.url
+    }
 
-            if showReaderMode {
-                if let url = currentWebURL ?? displayURL {
-                    ReaderModeWebView(
-                        url: url,
-                        isLoading: $isLoadingReader,
-                        fontSize: settings.readerFontSize,
-                        theme: settings.readerTheme,
-                        onScrollDirectionChange: { _ in },
-                        onWebViewCreated: { wv in readerWebViewRef = wv }
-                    )
-                    .id("reader-\(bookmark.id)-\(settings.readerFontSize.rawValue)-\(settings.readerTheme.rawValue)")
+    var body: some View {
+        HStack(spacing: 0) {
+            VStack(spacing: 0) {
+                ZStack {
+                    // WebView stays in the hierarchy at all times to avoid reloading on reader mode toggle
+                    if let url = displayURL {
+                        WebView(
+                            url: url,
+                            isLoading: $isLoading,
+                            fallbackURL: URL(string: bookmark.url),
+                            currentURL: $currentWebURL,
+                            onLinkTapped: { tappedURL in
+                                NSWorkspace.shared.open(tappedURL)
+                            },
+                            onWebViewCreated: { wv in
+                                webViewRef = wv
+                            }
+                        )
+                        .id(bookmark.id)
+                        .opacity(showReaderMode ? 0 : 1)
+                    } else {
+                        ContentUnavailableView("Invalid URL", systemImage: "exclamationmark.triangle")
+                    }
+
+                    if showReaderMode {
+                        if let url = currentWebURL ?? displayURL {
+                            ReaderModeWebView(
+                                url: url,
+                                isLoading: $isLoadingReader,
+                                highlights: highlights,
+                                serverReaderHTML: serverReaderHTML,
+                                snapshotTrigger: readerSnapshotTrigger,
+                                fontSize: settings.readerFontSize,
+                                theme: settings.readerTheme,
+                                onScrollDirectionChange: { _ in },
+                                onTextSelected: { text in selectedText = text },
+                                onMarkdownTextSelected: { md in selectedMarkdownText = md },
+                                onSnapshotReady: { data in
+                                    Task {
+                                        try? await LinkdingService.shared.uploadBookmarkAsset(
+                                            bookmarkId: bookmark.id,
+                                            data: data,
+                                            filename: "reader.html"
+                                        )
+                                    }
+                                },
+                                onWebViewCreated: { wv in readerWebViewRef = wv },
+                                onDoubleClickParagraph: { paragraphText in
+                                    let h = Highlight(
+                                        id: UUID(),
+                                        bookmarkId: bookmark.id,
+                                        selectedText: paragraphText,
+                                        markdownText: nil,
+                                        note: nil,
+                                        timestamp: Date(),
+                                        bookmarkTitle: bookmarkDisplayTitle,
+                                        bookmarkURL: bookmark.url,
+                                        bookmarkTags: currentTags
+                                    )
+                                    HighlightStorage.shared.save(h)
+                                    highlights = HighlightStorage.shared.load(bookmarkId: bookmark.id)
+                                    uploadHighlights()
+                                    ensureHighlightTag()
+                                },
+                                onDoubleClickHighlight: { idString in
+                                    if let h = highlights.first(where: { $0.id.uuidString == idString }) {
+                                        doubleClickEditNoteText = h.note ?? ""
+                                        doubleClickEditingHighlight = h
+                                    }
+                                }
+                            )
+                            .id("reader-\(bookmark.id)-\(settings.readerFontSize.rawValue)-\(settings.readerTheme.rawValue)")
+                        }
+                    }
+
+                    if (showReaderMode ? isLoadingReader : isLoading) {
+                        ProgressView()
+                            .scaleEffect(1.5)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(Color(NSColor.windowBackgroundColor).opacity(0.8))
+                    }
+                }
+
+                // Selection action bar — appears below reader when text is selected
+                if showReaderMode && !selectedText.isEmpty {
+                    Divider()
+                    HStack(spacing: 0) {
+                        Button {
+                            saveHighlight()
+                        } label: {
+                            Label("Highlight", systemImage: "highlighter")
+                                .font(.subheadline.weight(.medium))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                        }
+                        .buttonStyle(.plain)
+
+                        Divider().frame(height: 36)
+
+                        Button {
+                            pendingNoteText = ""
+                            showAddNoteSheet = true
+                        } label: {
+                            Label("Add Note", systemImage: "note.text.badge.plus")
+                                .font(.subheadline.weight(.medium))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                        }
+                        .buttonStyle(.plain)
+
+                        Divider().frame(height: 36)
+
+                        Button {
+                            clearSelection()
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.subheadline)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 10)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.secondary)
+                    }
+                    .background(Color(NSColor.windowBackgroundColor))
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
+            .animation(.easeInOut(duration: 0.2), value: selectedText.isEmpty)
 
-            if (showReaderMode ? isLoadingReader : isLoading) {
-                ProgressView()
-                    .scaleEffect(1.5)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(NSColor.windowBackgroundColor).opacity(0.8))
+            // Right panel — highlights inspector
+            if showHighlightsList {
+                Divider()
+                HighlightsPanelView(
+                    bookmarkId: bookmark.id,
+                    highlights: $highlights,
+                    onChanged: uploadHighlights
+                )
+                .frame(width: 300)
+                .transition(.move(edge: .trailing).combined(with: .opacity))
             }
         }
+        .animation(.easeInOut(duration: 0.25), value: showHighlightsList)
         .task(id: bookmark.id) {
             currentTags = bookmark.tagNames
             currentNotes = bookmark.notes
             displayURL = URL(string: bookmark.url)
             markedAsRead = !bookmark.unread
+            selectedText = ""
+            serverReaderHTML = nil
+            showHighlightsList = false
+            await loadServerAssets()
             if let tags = try? await cacheManager.fetchAllTags() {
                 availableTags = tags
             }
@@ -92,6 +213,14 @@ struct BookmarkDetailView: View {
         .onChange(of: currentWebURL) { _, newURL in
             if isActive, let url = newURL {
                 SettingsManager.shared.viaSourceURL = url.absoluteString
+            }
+        }
+        .onChange(of: showReaderMode) { _, isOn in
+            if isOn {
+                Task { await loadServerAssets() }
+            } else {
+                selectedText = ""
+                showHighlightsList = false
             }
         }
         .onAppear { startKeyboardMonitor() }
@@ -158,6 +287,17 @@ struct BookmarkDetailView: View {
 
                 Divider()
 
+                // Highlights (reader mode only)
+                if showReaderMode {
+                    Button {
+                        showHighlightsList.toggle()
+                    } label: {
+                        Image(systemName: "highlighter")
+                    }
+                    .help("Highlights (h — toggle panel; h with selection — save highlight; a with selection — add note)")
+                    .foregroundStyle(highlights.isEmpty ? Color.primary : Color.yellow)
+                }
+
                 // Reader mode
                 Button {
                     showReaderMode.toggle()
@@ -198,7 +338,102 @@ struct BookmarkDetailView: View {
             )
             .frame(minWidth: 500, minHeight: 400)
         }
+        .sheet(isPresented: $showAddNoteSheet) {
+            AddHighlightNoteView(
+                selectedText: selectedText,
+                noteText: $pendingNoteText,
+                onSave: { note in
+                    saveHighlight(withNote: note.isEmpty ? nil : note)
+                    showAddNoteSheet = false
+                }
+            )
+            .frame(minWidth: 400, minHeight: 300)
+        }
+        .sheet(item: $doubleClickEditingHighlight) { highlight in
+            EditHighlightNoteView(
+                highlight: highlight,
+                noteText: $doubleClickEditNoteText,
+                onSave: { note in
+                    HighlightStorage.shared.updateNote(id: highlight.id, bookmarkId: bookmark.id, note: note)
+                    highlights = HighlightStorage.shared.load(bookmarkId: bookmark.id)
+                    doubleClickEditingHighlight = nil
+                    uploadHighlights()
+                },
+                onDelete: {
+                    HighlightStorage.shared.delete(id: highlight.id, bookmarkId: bookmark.id)
+                    highlights = HighlightStorage.shared.load(bookmarkId: bookmark.id)
+                    doubleClickEditingHighlight = nil
+                    uploadHighlights()
+                }
+            )
+            .frame(minWidth: 400, minHeight: 300)
+        }
     }
+
+    // MARK: - Highlights
+
+    @MainActor
+    private func loadServerAssets() async {
+        serverReaderHTML = nil
+        if let data = try? await LinkdingService.shared.downloadAsset(bookmarkId: bookmark.id, filename: "highlights.md") {
+            highlights = HighlightStorage.shared.overwriteFromMarkdown(
+                data,
+                bookmarkId: bookmark.id,
+                bookmarkTitle: bookmarkDisplayTitle,
+                bookmarkURL: bookmark.url
+            )
+        } else {
+            highlights = HighlightStorage.shared.load(bookmarkId: bookmark.id)
+        }
+        if let data = try? await LinkdingService.shared.downloadAsset(bookmarkId: bookmark.id, filename: "reader.html"),
+           let html = String(data: data, encoding: .utf8) {
+            serverReaderHTML = html
+        }
+    }
+
+    private func saveHighlight(withNote note: String? = nil) {
+        let h = Highlight(
+            id: UUID(),
+            bookmarkId: bookmark.id,
+            selectedText: selectedText,
+            markdownText: selectedMarkdownText == selectedText ? nil : selectedMarkdownText,
+            note: note,
+            timestamp: Date(),
+            bookmarkTitle: bookmarkDisplayTitle,
+            bookmarkURL: bookmark.url,
+            bookmarkTags: currentTags
+        )
+        HighlightStorage.shared.save(h)
+        highlights = HighlightStorage.shared.load(bookmarkId: bookmark.id)
+        selectedText = ""
+        selectedMarkdownText = ""
+        uploadHighlights()
+        ensureHighlightTag()
+    }
+
+    private func clearSelection() {
+        selectedText = ""
+        selectedMarkdownText = ""
+    }
+
+    private func uploadHighlights() {
+        guard let data = HighlightStorage.shared.markdownData(bookmarkId: bookmark.id) else { return }
+        readerSnapshotTrigger += 1
+        Task {
+            try? await LinkdingService.shared.uploadBookmarkAsset(
+                bookmarkId: bookmark.id,
+                data: data,
+                filename: "highlights.md"
+            )
+        }
+    }
+
+    private func ensureHighlightTag() {
+        guard !currentTags.contains(".highlight") else { return }
+        updateTags(currentTags + [".highlight"])
+    }
+
+    // MARK: - Bookmark actions
 
     private func toggleReadStatus() {
         isMarkingRead = true
@@ -237,6 +472,11 @@ struct BookmarkDetailView: View {
             try? await cacheManager.updateBookmarkTags(bookmarkId: bookmark.id, tags: newTags)
             currentTags = newTags
             onTagsUpdated(newTags)
+            if HighlightStorage.shared.markdownData(bookmarkId: bookmark.id) != nil {
+                HighlightStorage.shared.updateTags(newTags, bookmarkId: bookmark.id)
+                highlights = HighlightStorage.shared.load(bookmarkId: bookmark.id)
+                uploadHighlights()
+            }
         }
     }
 
@@ -252,13 +492,10 @@ struct BookmarkDetailView: View {
 
     private func startKeyboardMonitor() {
         keyboardMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [self] event in
-            // Don't intercept when typing in a text field / text view
             if let fr = NSApp.keyWindow?.firstResponder, fr is NSTextView {
                 return event
             }
-            // Don't intercept when a sheet is presented
-            if isEditingTags || isEditingNotes { return event }
-            // Only plain key presses (no Cmd/Opt/Ctrl)
+            if isEditingTags || isEditingNotes || showAddNoteSheet { return event }
             guard event.modifierFlags.intersection([.command, .option, .control]).isEmpty else {
                 return event
             }
@@ -271,7 +508,6 @@ struct BookmarkDetailView: View {
         keyboardMonitor = nil
     }
 
-    /// Returns nil if the event was consumed, or the original event to pass through.
     private func handleKey(_ event: NSEvent) -> NSEvent? {
         guard let chars = event.charactersIgnoringModifiers else { return event }
 
@@ -296,15 +532,32 @@ struct BookmarkDetailView: View {
             isEditingNotes = true
             return nil
 
+        case "h":
+            if showReaderMode {
+                if !selectedText.isEmpty {
+                    saveHighlight()
+                } else {
+                    showHighlightsList.toggle()
+                }
+            }
+            return nil
+
+        case "a":
+            if showReaderMode && !selectedText.isEmpty {
+                pendingNoteText = ""
+                showAddNoteSheet = true
+            }
+            return nil
+
         case "b":
             if let url = URL(string: bookmark.url) { NSWorkspace.shared.open(url) }
             return nil
 
-        case "\r", "\n":   // Return / Enter
+        case "\r", "\n":
             if let url = URL(string: bookmark.url) { NSWorkspace.shared.open(url) }
             return nil
 
-        case " ":   // Space — scroll page, or navigate next if at bottom
+        case " ":
             scrollOrNavigateNext()
             return nil
 
@@ -341,20 +594,67 @@ struct BookmarkDetailView: View {
     }
 }
 
+// MARK: - Add Highlight Note View
+
+private struct AddHighlightNoteView: View {
+    let selectedText: String
+    @Binding var noteText: String
+    let onSave: (String) -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Add Note")
+                .font(.headline)
+
+            Text(selectedText)
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.yellow.opacity(0.25))
+                .cornerRadius(6)
+                .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.yellow.opacity(0.6), lineWidth: 1))
+
+            TextEditor(text: $noteText)
+                .frame(minHeight: 120)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.3), lineWidth: 1))
+
+            Spacer()
+
+            HStack {
+                Button("Cancel") { dismiss() }
+                Spacer()
+                Button("Save") { onSave(noteText) }
+                    .buttonStyle(.borderedProminent)
+            }
+        }
+        .padding()
+    }
+}
+
 // MARK: - Reader Mode WebView (macOS)
 
 struct ReaderModeWebView: NSViewRepresentable {
     let url: URL
     @Binding var isLoading: Bool
+    let highlights: [Highlight]
+    let serverReaderHTML: String?
+    let snapshotTrigger: Int
     let fontSize: ReaderFontSize
     let theme: ReaderTheme
     let onScrollDirectionChange: (Bool) -> Void
+    var onTextSelected: ((String) -> Void)? = nil
+    var onMarkdownTextSelected: ((String) -> Void)? = nil
+    var onSnapshotReady: ((Data) -> Void)? = nil
     var onWebViewCreated: ((WKWebView) -> Void)? = nil
+    var onDoubleClickParagraph: ((String) -> Void)? = nil
+    var onDoubleClickHighlight: ((String) -> Void)? = nil
 
     func makeNSView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         let contentController = WKUserContentController()
         contentController.add(context.coordinator, name: "scrollHandler")
+        contentController.add(context.coordinator, name: "selectionHandler")
+        contentController.add(context.coordinator, name: "doubleClickHandler")
         config.userContentController = contentController
 
         let webView = WKWebView(frame: .zero, configuration: config)
@@ -366,12 +666,31 @@ struct ReaderModeWebView: NSViewRepresentable {
     func updateNSView(_ webView: WKWebView, context: Context) {
         context.coordinator.fontSize = fontSize
         context.coordinator.theme = theme
+        context.coordinator.highlights = highlights
+        context.coordinator.onTextSelected = onTextSelected
+        context.coordinator.onMarkdownTextSelected = onMarkdownTextSelected
+        context.coordinator.onSnapshotReady = onSnapshotReady
+        context.coordinator.onDoubleClickParagraph = onDoubleClickParagraph
+        context.coordinator.onDoubleClickHighlight = onDoubleClickHighlight
 
-        if webView.url != url {
-            let request = URLRequest(url: url)
-            webView.load(request)
+        let serverHTMLJustArrived = context.coordinator.serverReaderHTML == nil && serverReaderHTML != nil
+        context.coordinator.serverReaderHTML = serverReaderHTML
+
+        if snapshotTrigger != context.coordinator.snapshotTrigger {
+            context.coordinator.snapshotTrigger = snapshotTrigger
+            context.coordinator.pendingSnapshot = true
+        }
+
+        if serverHTMLJustArrived && !context.coordinator.isLoadingReaderHTML {
+            context.coordinator.requestedURL = nil
+        }
+
+        if !context.coordinator.isLoadingReaderHTML && context.coordinator.requestedURL != url {
+            context.coordinator.requestedURL = url
+            webView.load(URLRequest(url: url))
         } else {
             context.coordinator.applyReaderStyling(webView)
+            context.coordinator.applyHighlights(webView)
         }
     }
 
@@ -383,12 +702,29 @@ struct ReaderModeWebView: NSViewRepresentable {
         var parent: ReaderModeWebView
         var fontSize: ReaderFontSize
         var theme: ReaderTheme
+        var highlights: [Highlight] = []
+        var onTextSelected: ((String) -> Void)?
+        var onMarkdownTextSelected: ((String) -> Void)?
+        var onSnapshotReady: ((Data) -> Void)?
+        var onDoubleClickParagraph: ((String) -> Void)?
+        var onDoubleClickHighlight: ((String) -> Void)?
+        var serverReaderHTML: String? = nil
+        var snapshotTrigger: Int = -1
+        var pendingSnapshot = false
+        var requestedURL: URL? = nil
+        var isLoadingReaderHTML = false
         private var hasExtractedContent = false
 
         init(_ parent: ReaderModeWebView, fontSize: ReaderFontSize, theme: ReaderTheme) {
             self.parent = parent
             self.fontSize = fontSize
             self.theme = theme
+            self.highlights = parent.highlights
+            self.onTextSelected = parent.onTextSelected
+            self.onMarkdownTextSelected = parent.onMarkdownTextSelected
+            self.onSnapshotReady = parent.onSnapshotReady
+            self.onDoubleClickParagraph = parent.onDoubleClickParagraph
+            self.onDoubleClickHighlight = parent.onDoubleClickHighlight
         }
 
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -398,15 +734,53 @@ struct ReaderModeWebView: NSViewRepresentable {
                         self.parent.onScrollDirectionChange(scrollingDown)
                     }
                 }
+            } else if message.name == "selectionHandler", let body = message.body as? [String: Any] {
+                let text = (body["text"] as? String) ?? ""
+                let md = (body["markdownText"] as? String) ?? text
+                DispatchQueue.main.async {
+                    self.onTextSelected?(text)
+                    self.onMarkdownTextSelected?(md)
+                }
+            } else if message.name == "doubleClickHandler", let body = message.body as? [String: Any] {
+                let type = body["type"] as? String
+                if type == "existing", let id = body["highlightId"] as? String {
+                    DispatchQueue.main.async { self.onDoubleClickHighlight?(id) }
+                } else if type == "new", let text = body["paragraphText"] as? String, !text.isEmpty {
+                    DispatchQueue.main.async { self.onDoubleClickParagraph?(text) }
+                }
             }
         }
 
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
             hasExtractedContent = false
-            DispatchQueue.main.async { self.parent.isLoading = true }
+            if !isLoadingReaderHTML {
+                DispatchQueue.main.async { self.parent.isLoading = true }
+            }
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            if isLoadingReaderHTML {
+                isLoadingReaderHTML = false
+                hasExtractedContent = true
+                injectInteractionScripts(webView)
+                applyHighlights(webView)
+                DispatchQueue.main.async { self.parent.isLoading = false }
+                return
+            }
+
+            // If the server already has a reader.html, use it directly — no Readability needed
+            if let serverHTML = serverReaderHTML {
+                isLoadingReaderHTML = true
+                let baseURL = parent.url
+                DispatchQueue.main.async {
+                    webView.loadHTMLString(serverHTML, baseURL: baseURL)
+                }
+                return
+            }
+
+            // No server snapshot yet — run Readability and upload the result immediately
+            pendingSnapshot = true
+
             guard let path = Bundle.main.path(forResource: "Readability", ofType: "js"),
                   let readabilityJS = try? String(contentsOfFile: path, encoding: .utf8) else {
                 DispatchQueue.main.async { self.parent.isLoading = false }
@@ -436,10 +810,10 @@ struct ReaderModeWebView: NSViewRepresentable {
                     byline = dict["byline"] as? String ?? ""
                 }
                 let readerHTML = self.buildReaderHTML(title: title, byline: byline, content: content)
-                let loadHTMLScript = "document.open(); document.write(\(self.escapeForJS(readerHTML))); document.close();"
-                webView.evaluateJavaScript(loadHTMLScript) { _, _ in
-                    self.hasExtractedContent = true
-                    DispatchQueue.main.async { self.parent.isLoading = false }
+                let baseURL = self.parent.url
+                self.isLoadingReaderHTML = true
+                DispatchQueue.main.async {
+                    webView.loadHTMLString(readerHTML, baseURL: baseURL)
                 }
             }
         }
@@ -456,6 +830,216 @@ struct ReaderModeWebView: NSViewRepresentable {
             })();
             """
             webView.evaluateJavaScript(styleScript, completionHandler: nil)
+        }
+
+        func applyHighlights(_ webView: WKWebView) {
+            guard hasExtractedContent else { return }
+
+            let shouldSnapshot = pendingSnapshot
+            pendingSnapshot = false
+
+            guard !highlights.isEmpty else {
+                if shouldSnapshot { captureSnapshot(webView) }
+                return
+            }
+
+            let highlightsData: [[String: Any]] = highlights.map { h in
+                ["id": h.id.uuidString, "selectedText": h.selectedText, "hasNote": h.note != nil && !h.note!.isEmpty]
+            }
+
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: highlightsData),
+                  let jsonString = String(data: jsonData, encoding: .utf8) else { return }
+
+            let script = """
+            (function() {
+                var highlights = \(jsonString);
+
+                document.querySelectorAll('mark[data-highlight-id]').forEach(function(mark) {
+                    var parent = mark.parentNode;
+                    while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+                    parent.removeChild(mark);
+                });
+                document.querySelectorAll('span[data-note-indicator]').forEach(function(el) { el.remove(); });
+                document.body.normalize();
+
+                highlights.forEach(function(h) {
+                    var textNodes = [];
+                    var totalText = '';
+                    var walker = document.createTreeWalker(
+                        document.body,
+                        NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+                        { acceptNode: function(n) {
+                            if (n.nodeType === 1) {
+                                var t = n.tagName;
+                                if (t === 'SCRIPT' || t === 'STYLE' || t === 'MARK') return NodeFilter.FILTER_REJECT;
+                                return NodeFilter.FILTER_SKIP;
+                            }
+                            return NodeFilter.FILTER_ACCEPT;
+                        }}
+                    );
+                    var node;
+                    while ((node = walker.nextNode()) !== null) {
+                        textNodes.push({ node: node, start: totalText.length });
+                        totalText += node.textContent;
+                    }
+
+                    var matchIdx = totalText.indexOf(h.selectedText);
+                    if (matchIdx === -1) return;
+                    var matchEnd = matchIdx + h.selectedText.length;
+
+                    for (var i = textNodes.length - 1; i >= 0; i--) {
+                        var tn = textNodes[i];
+                        var nodeEnd = tn.start + tn.node.textContent.length;
+                        if (nodeEnd <= matchIdx || tn.start >= matchEnd) continue;
+                        var ls = Math.max(matchIdx, tn.start) - tn.start;
+                        var le = Math.min(matchEnd, nodeEnd) - tn.start;
+                        var txt = tn.node.textContent;
+                        var frag = document.createDocumentFragment();
+                        if (ls > 0) frag.appendChild(document.createTextNode(txt.substring(0, ls)));
+                        var mark = document.createElement('mark');
+                        mark.style.cssText = 'background-color: rgba(255, 220, 0, 0.45); border-radius: 2px; padding: 1px 0;';
+                        mark.dataset.highlightId = h.id;
+                        mark.textContent = txt.substring(ls, le);
+                        frag.appendChild(mark);
+                        if (le < txt.length) frag.appendChild(document.createTextNode(txt.substring(le)));
+                        tn.node.parentNode.replaceChild(frag, tn.node);
+                    }
+
+                    // Add tiny note indicator dot after the last mark for this highlight
+                    if (h.hasNote) {
+                        var marks = document.querySelectorAll('mark[data-highlight-id="' + h.id + '"]');
+                        if (marks.length > 0) {
+                            var dot = document.createElement('span');
+                            dot.dataset.noteIndicator = h.id;
+                            dot.style.cssText = 'display:inline-block;width:6px;height:6px;background:#f5c000;border-radius:50%;vertical-align:super;font-size:0;margin-left:2px;';
+                            var lastMark = marks[marks.length - 1];
+                            lastMark.parentNode.insertBefore(dot, lastMark.nextSibling);
+                        }
+                    }
+                });
+            })();
+            """
+
+            webView.evaluateJavaScript(script) { [weak self] _, _ in
+                guard let self, shouldSnapshot else { return }
+                self.captureSnapshot(webView)
+            }
+        }
+
+        private func injectInteractionScripts(_ webView: WKWebView) {
+            let js = """
+            (function() {
+                if (window._linkdingScriptsLoaded) return;
+                window._linkdingScriptsLoaded = true;
+
+                var lastScrollY = window.scrollY;
+                var ticking = false;
+                var lastDirection = null;
+                var scrollThreshold = 10;
+                window.addEventListener('scroll', function() {
+                    if (!ticking) {
+                        window.requestAnimationFrame(function() {
+                            var cur = window.scrollY;
+                            var diff = cur - lastScrollY;
+                            if (Math.abs(diff) > scrollThreshold) {
+                                var down = diff > 0;
+                                var atBottom = (window.innerHeight + cur) >= document.body.scrollHeight - 10;
+                                if (!atBottom && down !== lastDirection) {
+                                    lastDirection = down;
+                                    window.webkit.messageHandlers.scrollHandler.postMessage({ scrollingDown: down });
+                                }
+                                lastScrollY = cur;
+                            }
+                            ticking = false;
+                        });
+                        ticking = true;
+                    }
+                });
+
+                function resolveURL(href) {
+                    var a = document.createElement('a');
+                    a.href = href;
+                    return a.href;
+                }
+                function selectionToMarkdown(sel) {
+                    if (!sel || sel.rangeCount === 0) return '';
+                    var frag = sel.getRangeAt(0).cloneContents();
+                    function walk(node) {
+                        if (node.nodeType === 3) return node.textContent;
+                        if (node.nodeType === 1 && node.tagName === 'A') {
+                            var raw = node.getAttribute('href') || '';
+                            var href = raw ? resolveURL(raw) : '';
+                            var text = Array.from(node.childNodes).map(walk).join('');
+                            if (href && !href.startsWith('#') && !href.startsWith('javascript:') && text.trim()) {
+                                return '[' + text.trim() + '](' + href + ')';
+                            }
+                            return text;
+                        }
+                        if (node.childNodes) return Array.from(node.childNodes).map(walk).join('');
+                        return '';
+                    }
+                    return walk(frag).replace(/[ \\t\\r\\n]+/g, ' ').trim();
+                }
+                function reportSelection() {
+                    var sel = window.getSelection();
+                    var text = sel ? sel.toString().trim() : '';
+                    var md = selectionToMarkdown(sel) || text;
+                    window.webkit.messageHandlers.selectionHandler.postMessage({ text: text, markdownText: md });
+                }
+                document.addEventListener('pointerup', function() { setTimeout(reportSelection, 100); });
+                document.addEventListener('mouseup',   function() { setTimeout(reportSelection, 100); });
+                var selTimer = null;
+                document.addEventListener('selectionchange', function() {
+                    clearTimeout(selTimer);
+                    selTimer = setTimeout(reportSelection, 200);
+                });
+
+                document.addEventListener('dblclick', function(e) {
+                    var el = e.target;
+
+                    // Check if click landed on an existing highlight mark
+                    var markEl = (el.closest ? el.closest('mark[data-highlight-id]') : null)
+                                 || (el.tagName === 'MARK' && el.dataset && el.dataset.highlightId ? el : null);
+                    if (markEl && markEl.dataset.highlightId) {
+                        if (window.getSelection) window.getSelection().removeAllRanges();
+                        window.webkit.messageHandlers.doubleClickHandler.postMessage({ type: 'existing', highlightId: markEl.dataset.highlightId });
+                        return;
+                    }
+
+                    // Walk up to the nearest block element
+                    var blockTags = ['P', 'LI', 'BLOCKQUOTE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'TD', 'TH'];
+                    var block = el;
+                    while (block && block !== document.body) {
+                        if (blockTags.indexOf(block.tagName) !== -1) break;
+                        block = block.parentElement;
+                    }
+                    if (!block || block === document.body) return;
+
+                    // If the block already contains a highlight, open edit for the first mark in it
+                    var existingMark = block.querySelector('mark[data-highlight-id]');
+                    if (existingMark && existingMark.dataset.highlightId) {
+                        if (window.getSelection) window.getSelection().removeAllRanges();
+                        window.webkit.messageHandlers.doubleClickHandler.postMessage({ type: 'existing', highlightId: existingMark.dataset.highlightId });
+                        return;
+                    }
+
+                    var text = (block.innerText || '').replace(/\\s+/g, ' ').trim();
+                    if (!text) return;
+
+                    if (window.getSelection) window.getSelection().removeAllRanges();
+                    window.webkit.messageHandlers.doubleClickHandler.postMessage({ type: 'new', paragraphText: text });
+                });
+            })();
+            """
+            webView.evaluateJavaScript(js, completionHandler: nil)
+        }
+
+        private func captureSnapshot(_ webView: WKWebView) {
+            webView.evaluateJavaScript("document.documentElement.outerHTML") { [weak self] result, _ in
+                guard let html = result as? String,
+                      let data = html.data(using: .utf8) else { return }
+                self?.onSnapshotReady?(data)
+            }
         }
 
         private func buildReaderHTML(title: String, byline: String, content: String) -> String {
@@ -491,15 +1075,8 @@ struct ReaderModeWebView: NSViewRepresentable {
                   .replacingOccurrences(of: "'", with: "&#39;")
         }
 
-        private func escapeForJS(_ string: String) -> String {
-            let escaped = string
-                .replacingOccurrences(of: "\\", with: "\\\\")
-                .replacingOccurrences(of: "`", with: "\\`")
-                .replacingOccurrences(of: "$", with: "\\$")
-            return "`\(escaped)`"
-        }
-
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            isLoadingReaderHTML = false
             DispatchQueue.main.async { self.parent.isLoading = false }
         }
     }
